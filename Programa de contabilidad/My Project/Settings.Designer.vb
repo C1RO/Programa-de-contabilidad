@@ -56,13 +56,13 @@ Namespace My
         
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
-        Public Property Pathfile() As String
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property Saldo() As Integer
             Get
-                Return CType(Me("Pathfile"),String)
+                Return CType(Me("Saldo"),Integer)
             End Get
             Set
-                Me("Pathfile") = value
+                Me("Saldo") = value
             End Set
         End Property
     End Class

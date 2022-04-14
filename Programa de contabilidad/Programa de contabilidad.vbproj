@@ -64,10 +64,10 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>9DD6D3C93C2A254A8FFA865D87F582DD6B931E9C</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>01344486A1A28C8419CA22A8C9E1F6F7024E1FAC</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>Programa de contabilidad_1_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>Programa de contabilidad_2_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
@@ -80,6 +80,9 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>rionsoft__9__9Oe_icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DevExpress.Data.Desktop.v21.2, Version=21.2.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
@@ -166,6 +169,7 @@
     <None Include="App.config" />
     <None Include="packages.config" />
     <None Include="Programa de contabilidad_1_TemporaryKey.pfx" />
+    <None Include="Programa de contabilidad_2_TemporaryKey.pfx" />
     <None Include="Programa de contabilidad_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
@@ -182,6 +186,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="rionsoft__9__9Oe_icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

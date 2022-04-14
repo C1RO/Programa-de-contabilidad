@@ -3,13 +3,20 @@ Imports System.IO
 Imports Dropbox
 Public Class Form1
 
+    Dim Saldox As Int64 = My.Settings.Saldo
     Private Sub Agregar_Click(sender As Object, e As EventArgs) Handles Agregar.Click
         Try
+
             Dim Fecha As DateTime = DateTimePicker1.Value
             Dim Descripcion As String = TextBox2.Text
             Dim Compras As Int64 = TextBox3.Text
             Dim Cobranzas As Int64 = TextBox4.Text
-            Dim Saldo As Int64 = Saldo - Compras + Cobranzas
+
+
+
+            Dim Saldo As Int64 = Saldox - Compras + Cobranzas
+            Saldox = Saldo
+            My.Settings.Saldo = Saldox
             DataGridView1.Rows.Add(Fecha.ToString, Descripcion.ToString, Compras.ToString, Cobranzas.ToString, Saldo.ToString)
             TextBox2.Text = ""
             TextBox3.Text = "0"
@@ -33,7 +40,7 @@ Public Class Form1
             DataGridView1.Rows(FilaActual).Cells("Descripcion").Value = Descripcion.ToString
             DataGridView1.Rows(FilaActual).Cells("Compras").Value = Compras.ToString
             DataGridView1.Rows(FilaActual).Cells("Cobranzas").Value = Cobranzas.ToString
-            Dim Saldo As Int64 = Saldo - Compras + Cobranzas
+            Dim Saldo As Int64 = DataGridView1.Rows(FilaActual).Cells("Saldo").Value - Compras + Cobranzas
             DataGridView1.Rows(FilaActual).Cells("Saldo").Value = Saldo.ToString
             MsgBox("Modificado exitosamente")
 
@@ -90,58 +97,67 @@ Public Class Form1
 
         DesactivarBotones()
     End Sub
+    Private Sub Leerdata(pathfile As String)
+        Try
+            Dim archivo_leer As StreamReader
+            archivo_leer = New StreamReader(pathfile + "\.txt")
 
+            While Not archivo_leer.EndOfStream
+                Dim cadena As String = archivo_leer.ReadLine
+                Dim leer As String() = cadena.Split(New Char() {";"})
+                DataGridView1.Rows.Add(leer)
+            End While
+            archivo_leer.Close()
+
+        Catch ex As Exception
+            MsgBox("No se pudo encontrar su archivo en la carpeta")
+            Saldox = 0
+        End Try
+
+
+    End Sub
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         TextBox3.Text = "0"
         TextBox4.Text = "0"
-        Try
-            Dim archivo_leer As StreamReader
-            archivo_leer = New StreamReader(My.Settings.Pathfile)
-
-            While Not archivo_leer.EndOfStream
-                Dim cadena As String = archivo_leer.ReadLine
-                Dim leer As String() = cadena.Split(New Char() {";"})
-                DataGridView1.Rows.Add(leer)
-            End While
-            archivo_leer.Close()
-        Catch ex As Exception
-            MsgBox("ArchivoNoEncontrado")
-
-        End Try
+        OpenFileOnStart()
 
     End Sub
-    Public pathfile As String
+
     Private Sub ChoosePathFile()
-        Dim dialog As New FolderBrowserDialog()
-        dialog.RootFolder = Environment.SpecialFolder.Desktop
-        dialog.SelectedPath = "C:\"
-        dialog.Description = "Seleccionar donde se guardaran los datos"
-        If dialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
-            pathfile = dialog.SelectedPath
+        Dim objFolderDlg As System.Windows.Forms.FolderBrowserDialog
+        objFolderDlg = New System.Windows.Forms.FolderBrowserDialog
+        objFolderDlg.SelectedPath = "C:\Test"
+        If objFolderDlg.ShowDialog() = DialogResult.OK Then
+
+
+            GuardarDatos(objFolderDlg.SelectedPath)
+
+
         End If
-        My.Computer.FileSystem.WriteAllText(pathfile & "apppath.txt", pathfile, False)
-        Try
-            DataGridView1.Rows.Clear()
-            Dim archivo_leer As StreamReader
-            archivo_leer = New StreamReader(pathfile + "datos.txt")
-            My.Settings.Pathfile = pathfile + "datos.txt"
-            While Not archivo_leer.EndOfStream
-                Dim cadena As String = archivo_leer.ReadLine
-                Dim leer As String() = cadena.Split(New Char() {";"})
-                DataGridView1.Rows.Add(leer)
-            End While
-            archivo_leer.Close()
-        Catch ex As Exception
 
-
-        End Try
 
     End Sub
-    Private Sub GuardarDatos()
+    Private Sub OpenFileOnStart()
+        Dim objFolderDlg As System.Windows.Forms.FolderBrowserDialog
+        objFolderDlg = New System.Windows.Forms.FolderBrowserDialog
+        objFolderDlg.SelectedPath = "C:\Test"
+        If objFolderDlg.ShowDialog() = DialogResult.OK Then
+            DataGridView1.Rows.Clear()
+
+            Leerdata(objFolderDlg.SelectedPath)
+        End If
+
+
+
+
+
+    End Sub
+
+    Private Sub GuardarDatos(path As String)
         Dim archivo_escritura As StreamWriter
         Dim linea As String
-        archivo_escritura = New StreamWriter(pathfile + "datos.txt")
+        archivo_escritura = New StreamWriter(path + "\.txt")
 
 
 
@@ -164,7 +180,7 @@ Public Class Form1
 
     End Sub
     Private Sub Guardar_Click(sender As Object, e As EventArgs) Handles Guardar.Click
-        GuardarDatos()
+        ChoosePathFile()
     End Sub
 
 
@@ -172,7 +188,7 @@ Public Class Form1
         Dim dialog As DialogResult
         dialog = MessageBox.Show("Guardar antes de salir?", "Orionsoft", MessageBoxButtons.YesNoCancel)
         If dialog = DialogResult.Yes Then
-            GuardarDatos()
+            ChoosePathFile()
         ElseIf dialog = DialogResult.No Then
             Application.Exit()
         ElseIf dialog = DialogResult.Cancel Then
