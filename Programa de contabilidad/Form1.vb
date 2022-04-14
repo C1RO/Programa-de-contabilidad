@@ -1,7 +1,6 @@
-﻿
-Imports System.ComponentModel
+﻿Imports Newtonsoft
 Imports System.IO
-Imports System.Data.SqlClient
+Imports Dropbox
 Public Class Form1
 
     Private Sub Agregar_Click(sender As Object, e As EventArgs) Handles Agregar.Click
@@ -22,7 +21,6 @@ Public Class Form1
             TextBox4.Text = "0"
 
         End Try
-
     End Sub
     Private Sub Editar_Click(sender As Object, e As EventArgs) Handles Editar.Click
         Try
@@ -56,9 +54,14 @@ Public Class Form1
         Dim pregunta As String
         pregunta = MsgBox("Esta seguro que desea eliminar esta fila?", MsgBoxStyle.YesNo, "INFORMACION DEL SISTEMA")
         If pregunta = vbYes Then
-            Dim filActual = DataGridView1.CurrentRow.Index
-            DataGridView1.Rows.Remove(DataGridView1.Rows(filActual))
-            MsgBox("ELIMINADO exitosamente")
+            Try
+                Dim filActual = DataGridView1.CurrentRow.Index
+                DataGridView1.Rows.Remove(DataGridView1.Rows(filActual))
+                MsgBox("ELIMINADO exitosamente")
+            Catch ex As Exception
+                MsgBox("No se puede eliminar la ultima fila")
+            End Try
+
             ActivarBotones()
             TextBox2.Text = ""
             TextBox3.Text = "0"
@@ -81,10 +84,10 @@ Public Class Form1
 
     Private Sub DataGridView1_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView1.CellDoubleClick
         Dim filaActual = DataGridView1.CurrentRow.Index
-        DateTimePicker1.Value = DataGridView1.Rows(filaActual).Cells("Fecha").Value
         TextBox2.Text = DataGridView1.Rows(filaActual).Cells("Descripcion").Value
         TextBox3.Text = DataGridView1.Rows(filaActual).Cells("Compras").Value
         TextBox4.Text = DataGridView1.Rows(filaActual).Cells("Cobranzas").Value
+
         DesactivarBotones()
     End Sub
 
@@ -92,26 +95,64 @@ Public Class Form1
 
         TextBox3.Text = "0"
         TextBox4.Text = "0"
-        Dim archivo_leer As StreamReader
-        archivo_leer = New StreamReader("./datos.txt")
-        While Not archivo_leer.EndOfStream
-            Dim cadena As String = archivo_leer.ReadLine
-            Dim leer As String() = cadena.Split(New Char() {";"})
-            DataGridView1.Rows.Add(leer)
-        End While
-        archivo_leer.Close()
-    End Sub
+        Try
+            Dim archivo_leer As StreamReader
+            archivo_leer = New StreamReader(My.Settings.Pathfile)
 
+            While Not archivo_leer.EndOfStream
+                Dim cadena As String = archivo_leer.ReadLine
+                Dim leer As String() = cadena.Split(New Char() {";"})
+                DataGridView1.Rows.Add(leer)
+            End While
+            archivo_leer.Close()
+        Catch ex As Exception
+            MsgBox("ArchivoNoEncontrado")
+
+        End Try
+
+    End Sub
+    Public pathfile As String
+    Private Sub ChoosePathFile()
+        Dim dialog As New FolderBrowserDialog()
+        dialog.RootFolder = Environment.SpecialFolder.Desktop
+        dialog.SelectedPath = "C:\"
+        dialog.Description = "Seleccionar donde se guardaran los datos"
+        If dialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
+            pathfile = dialog.SelectedPath
+        End If
+        My.Computer.FileSystem.WriteAllText(pathfile & "apppath.txt", pathfile, False)
+        Try
+            DataGridView1.Rows.Clear()
+            Dim archivo_leer As StreamReader
+            archivo_leer = New StreamReader(pathfile + "datos.txt")
+            My.Settings.Pathfile = pathfile + "datos.txt"
+            While Not archivo_leer.EndOfStream
+                Dim cadena As String = archivo_leer.ReadLine
+                Dim leer As String() = cadena.Split(New Char() {";"})
+                DataGridView1.Rows.Add(leer)
+            End While
+            archivo_leer.Close()
+        Catch ex As Exception
+
+
+        End Try
+
+    End Sub
     Private Sub GuardarDatos()
         Dim archivo_escritura As StreamWriter
         Dim linea As String
-        archivo_escritura = New StreamWriter("./datos.txt")
+        archivo_escritura = New StreamWriter(pathfile + "datos.txt")
+
+
+
         With DataGridView1
             For y = 0 To DataGridView1.RowCount - 1
                 linea = .Rows(y).Cells("Fecha").Value & ";" &
                       .Rows(y).Cells("Descripcion").Value & ";" &
                          .Rows(y).Cells("Compras").Value & ";" &
-                          .Rows(y).Cells("Cobranzas").Value & ";"
+                          .Rows(y).Cells("Cobranzas").Value & ";" &
+                          .Rows(y).Cells("Saldo").Value & ";"
+
                 archivo_escritura.WriteLine(linea)
             Next
             MsgBox("Datos guardados exitosamente")
@@ -137,5 +178,17 @@ Public Class Form1
         ElseIf dialog = DialogResult.Cancel Then
             e.Cancel = True
         End If
+    End Sub
+
+    Private Sub DataGridView1_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView1.CellContentClick
+
+    End Sub
+
+    Private Sub ElegirCaminoToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ElegirCaminoToolStripMenuItem.Click
+        ChoosePathFile()
+    End Sub
+
+    Private Sub TextBox4_TextChanged(sender As Object, e As EventArgs) Handles TextBox4.TextChanged
+
     End Sub
 End Class
