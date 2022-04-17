@@ -3,7 +3,36 @@ Imports System.IO
 Imports Dropbox
 Public Class Form1
 
-    Dim Saldox As Int64 = My.Settings.Saldo
+
+    Dim fileName As String = "0"
+
+
+
+
+    Dim fi As New IO.FileInfo(fileName)
+    Dim Saldox As Int64 = Convert.ToInt64(fi.Name)
+
+    Private Sub reccorer(filaactual)
+
+
+        For i As Integer = filaactual + 1 To DataGridView1.Rows.Count() - 1 - 1 Step +1
+            DataGridView1.Rows(i).Cells(4).Value = DataGridView1.Rows(i).Cells(4).Value - DataGridView1.Rows(i).Cells("Compras").Value + DataGridView1.Rows(i).Cells("Cobranzas").Value
+        Next
+
+
+
+    End Sub
+
+    Private Sub reccorereliminar(filaactual, resto)
+
+
+        For i As Integer = filaactual + 1 To DataGridView1.Rows.Count() - 1 - 1 Step +1
+            DataGridView1.Rows(i).Cells(4).Value = DataGridView1.Rows(i).Cells(4).Value - resto
+        Next
+
+
+
+    End Sub
     Private Sub Agregar_Click(sender As Object, e As EventArgs) Handles Agregar.Click
         Try
 
@@ -11,16 +40,18 @@ Public Class Form1
             Dim Descripcion As String = TextBox2.Text
             Dim Compras As Int64 = TextBox3.Text
             Dim Cobranzas As Int64 = TextBox4.Text
+            Dim Saldo As Int64 = 0
 
 
 
-            Dim Saldo As Int64 = Saldox - Compras + Cobranzas
+            Saldo = Saldox - Compras + Cobranzas
             Saldox = Saldo
-            My.Settings.Saldo = Saldox
+
             DataGridView1.Rows.Add(Fecha.ToString, Descripcion.ToString, Compras.ToString, Cobranzas.ToString, Saldo.ToString)
             TextBox2.Text = ""
             TextBox3.Text = "0"
             TextBox4.Text = "0"
+
         Catch ex As Exception
             MsgBox("Ingrese los datos de forma correcta porfavor")
             TextBox2.Text = ""
@@ -40,10 +71,11 @@ Public Class Form1
             DataGridView1.Rows(FilaActual).Cells("Descripcion").Value = Descripcion.ToString
             DataGridView1.Rows(FilaActual).Cells("Compras").Value = Compras.ToString
             DataGridView1.Rows(FilaActual).Cells("Cobranzas").Value = Cobranzas.ToString
-            Dim Saldo As Int64 = DataGridView1.Rows(FilaActual).Cells("Saldo").Value - Compras + Cobranzas
+            Dim Saldo As Int64 = DataGridView1.Rows(FilaActual - 1).Cells("Saldo").Value - Compras + Cobranzas
             DataGridView1.Rows(FilaActual).Cells("Saldo").Value = Saldo.ToString
+            Saldox = DataGridView1.Rows(DataGridView1.Rows.Count() - 2).Cells("Saldo").Value
             MsgBox("Modificado exitosamente")
-
+            reccorer(FilaActual)
             TextBox2.Text = ""
             TextBox3.Text = "0"
             TextBox4.Text = "0"
@@ -63,7 +95,9 @@ Public Class Form1
         If pregunta = vbYes Then
             Try
                 Dim filActual = DataGridView1.CurrentRow.Index
+                reccorereliminar(filActual, DataGridView1.Rows(filActual).Cells("Saldo").Value)
                 DataGridView1.Rows.Remove(DataGridView1.Rows(filActual))
+                Saldox = DataGridView1.Rows(DataGridView1.Rows.Count() - 3).Cells("Saldo").Value
                 MsgBox("ELIMINADO exitosamente")
             Catch ex As Exception
                 MsgBox("No se puede eliminar la ultima fila")
@@ -98,17 +132,25 @@ Public Class Form1
         DesactivarBotones()
     End Sub
     Private Sub Leerdata(pathfile As String)
+        Dim fileName As String = pathfile
+
+
+
+
+        Dim fi As New IO.FileInfo(fileName)
         Try
             Dim archivo_leer As StreamReader
-            archivo_leer = New StreamReader(pathfile + "\.txt")
-
+            archivo_leer = New StreamReader(pathfile)
+            Dim stringToCleanUp As String = fi.Name
+            Dim characterToRemove As String = ".txt"
+            Dim cleanString As String = Replace(stringToCleanUp, characterToRemove, "")
+            Saldox = Convert.ToInt64(cleanString)
             While Not archivo_leer.EndOfStream
                 Dim cadena As String = archivo_leer.ReadLine
                 Dim leer As String() = cadena.Split(New Char() {";"})
                 DataGridView1.Rows.Add(leer)
             End While
             archivo_leer.Close()
-
         Catch ex As Exception
             MsgBox("No se pudo encontrar su archivo en la carpeta")
             Saldox = 0
@@ -139,16 +181,21 @@ Public Class Form1
 
     End Sub
     Private Sub OpenFileOnStart()
-        Dim objFolderDlg As System.Windows.Forms.FolderBrowserDialog
-        objFolderDlg = New System.Windows.Forms.FolderBrowserDialog
-        objFolderDlg.SelectedPath = "C:\Test"
-        If objFolderDlg.ShowDialog() = DialogResult.OK Then
-            DataGridView1.Rows.Clear()
+        'Dim objFolderDlg As System.Windows.Forms.FolderBrowserDialog
+        'objFolderDlg = New System.Windows.Forms.FolderBrowserDialog
+        'objFolderDlg.SelectedPath = "C:\Test"
 
-            Leerdata(objFolderDlg.SelectedPath)
-        End If
+        'If objFolderDlg.ShowDialog() = DialogResult.OK Then
+        '    DataGridView1.Rows.Clear()
 
-
+        '    Leerdata(objFolderDlg.SelectedPath)
+        'End If
+        Using openFileDialog1 As OpenFileDialog = New OpenFileDialog()
+            If openFileDialog1.ShowDialog() = DialogResult.OK Then
+                DataGridView1.Rows.Clear()
+                Leerdata(openFileDialog1.FileName)
+            End If
+        End Using
 
 
 
@@ -157,8 +204,8 @@ Public Class Form1
     Private Sub GuardarDatos(path As String)
         Dim archivo_escritura As StreamWriter
         Dim linea As String
-        archivo_escritura = New StreamWriter(path + "\.txt")
-
+        archivo_escritura = New StreamWriter(path + "\" + Saldox.ToString + ".txt")
+        fileName = path + "\" + Saldox.ToString + ".txt"
 
 
         With DataGridView1
