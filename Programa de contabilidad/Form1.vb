@@ -4,22 +4,22 @@ Imports Dropbox
 Public Class Form1
 
 
-    Dim fileName As String = "0"
 
 
 
 
-    Dim fi As New IO.FileInfo(fileName)
-    Dim Saldox As Int64 = Convert.ToInt64(fi.Name)
+
+    Dim Saldox As Int64 = 0
 
     Private Sub reccorer(filaactual)
 
 
         For i As Integer = filaactual + 1 To DataGridView1.Rows.Count() - 1 - 1 Step +1
-            DataGridView1.Rows(i).Cells(4).Value = DataGridView1.Rows(i).Cells(4).Value - DataGridView1.Rows(i).Cells("Compras").Value + DataGridView1.Rows(i).Cells("Cobranzas").Value
+            DataGridView1.Rows(i).Cells(4).Value = Convert.ToInt32(DataGridView1.Rows(i - 1).Cells(4).Value) - Convert.ToInt32(DataGridView1.Rows(i).Cells("Compras").Value) + Convert.ToInt32(DataGridView1.Rows(i).Cells("Cobranzas").Value)
+
         Next
 
-
+        Saldox = DataGridView1.Rows(DataGridView1.Rows.Count() - 2).Cells(4).Value
 
     End Sub
 
@@ -75,7 +75,10 @@ Public Class Form1
             DataGridView1.Rows(FilaActual).Cells("Saldo").Value = Saldo.ToString
             Saldox = DataGridView1.Rows(DataGridView1.Rows.Count() - 2).Cells("Saldo").Value
             MsgBox("Modificado exitosamente")
+
+
             reccorer(FilaActual)
+
             TextBox2.Text = ""
             TextBox3.Text = "0"
             TextBox4.Text = "0"
@@ -95,9 +98,9 @@ Public Class Form1
         If pregunta = vbYes Then
             Try
                 Dim filActual = DataGridView1.CurrentRow.Index
-                reccorereliminar(filActual, DataGridView1.Rows(filActual).Cells("Saldo").Value)
+                reccorereliminar(filActual, DataGridView1.Rows(filActual).Cells("Cobranzas").Value - DataGridView1.Rows(filActual).Cells("Compras").Value)
                 DataGridView1.Rows.Remove(DataGridView1.Rows(filActual))
-                Saldox = DataGridView1.Rows(DataGridView1.Rows.Count() - 3).Cells("Saldo").Value
+                Saldox = DataGridView1.Rows(DataGridView1.Rows.Count() - 2).Cells("Saldo").Value
                 MsgBox("ELIMINADO exitosamente")
             Catch ex As Exception
                 MsgBox("No se puede eliminar la ultima fila")
@@ -144,12 +147,14 @@ Public Class Form1
             Dim stringToCleanUp As String = fi.Name
             Dim characterToRemove As String = ".txt"
             Dim cleanString As String = Replace(stringToCleanUp, characterToRemove, "")
-            Saldox = Convert.ToInt64(cleanString)
+
             While Not archivo_leer.EndOfStream
                 Dim cadena As String = archivo_leer.ReadLine
                 Dim leer As String() = cadena.Split(New Char() {";"})
                 DataGridView1.Rows.Add(leer)
             End While
+            DataGridView1.Rows.Remove(DataGridView1.Rows(DataGridView1.Rows.Count() - 2))
+            Saldox = Convert.ToInt64(DataGridView1.Rows(DataGridView1.Rows.Count() - 1 - 1).Cells(4).Value)
             archivo_leer.Close()
         Catch ex As Exception
             MsgBox("No se pudo encontrar su archivo en la carpeta")
@@ -204,8 +209,7 @@ Public Class Form1
     Private Sub GuardarDatos(path As String)
         Dim archivo_escritura As StreamWriter
         Dim linea As String
-        archivo_escritura = New StreamWriter(path + "\" + Saldox.ToString + ".txt")
-        fileName = path + "\" + Saldox.ToString + ".txt"
+        archivo_escritura = New StreamWriter(path + "\" + "OrionContabilidad" + ".txt")
 
 
         With DataGridView1
@@ -252,6 +256,14 @@ Public Class Form1
     End Sub
 
     Private Sub TextBox4_TextChanged(sender As Object, e As EventArgs) Handles TextBox4.TextChanged
+
+    End Sub
+
+    Private Sub PictureBox1_Click(sender As Object, e As EventArgs) Handles PictureBox1.Click
+
+    End Sub
+
+    Private Sub MenuStrip2_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles MenuStrip2.ItemClicked
 
     End Sub
 End Class
