@@ -3,12 +3,6 @@ Imports System.IO
 Imports Dropbox
 Public Class Form1
 
-
-
-
-
-
-
     Dim Saldox As Int64 = 0
 
     Private Sub reccorer(filaactual)
@@ -126,7 +120,7 @@ Public Class Form1
         Eliminar.Enabled = True
     End Sub
 
-    Private Sub DataGridView1_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView1.CellDoubleClick
+    Private Sub DataGridView1_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs)
         Dim filaActual = DataGridView1.CurrentRow.Index
         TextBox2.Text = DataGridView1.Rows(filaActual).Cells("Descripcion").Value
         TextBox3.Text = DataGridView1.Rows(filaActual).Cells("Compras").Value
@@ -247,23 +241,14 @@ Public Class Form1
         End If
     End Sub
 
-    Private Sub DataGridView1_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView1.CellContentClick
+    Private Sub DataGridView1_CellContentClick(sender As Object, e As DataGridViewCellEventArgs)
 
     End Sub
 
-    Private Sub ElegirCaminoToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ElegirCaminoToolStripMenuItem.Click
+    Private Sub ElegirCaminoToolStripMenuItem_Click(sender As Object, e As EventArgs)
         ChoosePathFile()
     End Sub
 
-    Private Sub TextBox4_TextChanged(sender As Object, e As EventArgs) Handles TextBox4.TextChanged
 
-    End Sub
 
-    Private Sub PictureBox1_Click(sender As Object, e As EventArgs) Handles PictureBox1.Click
-
-    End Sub
-
-    Private Sub MenuStrip2_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles MenuStrip2.ItemClicked
-
-    End Sub
 End Class
