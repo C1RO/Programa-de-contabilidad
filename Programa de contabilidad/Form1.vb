@@ -1,17 +1,21 @@
 ﻿Imports System.IO
+Imports System.Globalization
+Imports System.Threading
+
+
 Public Class Form1
 
-    Dim Saldox As Int64 = 0
+    Dim Saldox As Decimal = 0
 
     Private Sub reccorer(filaactual)
 
 
         For i As Integer = filaactual + 1 To DataGridView1.Rows.Count() - 1 - 1 Step +1
-            DataGridView1.Rows(i).Cells(4).Value = Convert.ToInt32(DataGridView1.Rows(i - 1).Cells(4).Value) - Convert.ToInt32(DataGridView1.Rows(i).Cells("Compras").Value) + Convert.ToInt32(DataGridView1.Rows(i).Cells("Cobranzas").Value)
+            DataGridView1.Rows(i).Cells(4).Value = FormatCurrency(DataGridView1.Rows(i - 1).Cells(4).Value - DataGridView1.Rows(i).Cells("Compras").Value + DataGridView1.Rows(i).Cells("Cobranzas").Value)
 
         Next
 
-        Saldox = DataGridView1.Rows(DataGridView1.Rows.Count() - 2).Cells(4).Value
+        Saldox = FormatCurrency(DataGridView1.Rows(DataGridView1.Rows.Count() - 2).Cells(4).Value)
 
     End Sub
 
@@ -19,7 +23,7 @@ Public Class Form1
 
 
         For i As Integer = filaactual + 1 To DataGridView1.Rows.Count() - 1 - 1 Step +1
-            DataGridView1.Rows(i).Cells(4).Value = DataGridView1.Rows(i).Cells(4).Value - resto
+            DataGridView1.Rows(i).Cells(4).Value = FormatCurrency(DataGridView1.Rows(i).Cells(4).Value - resto)
         Next
 
 
@@ -30,16 +34,16 @@ Public Class Form1
 
             Dim Fecha As DateTime = DateTimePicker1.Value
             Dim Descripcion As String = TextBox2.Text
-            Dim Compras As Int64 = TextBox3.Text
-            Dim Cobranzas As Int64 = TextBox4.Text
-            Dim Saldo As Int64 = 0
+            Dim Compras As Decimal = TextBox3.Text
+            Dim Cobranzas As Decimal = TextBox4.Text
+            Dim Saldo As Decimal = 0
 
 
 
             Saldo = Saldox - Compras + Cobranzas
             Saldox = Saldo
 
-            DataGridView1.Rows.Add(Fecha.ToString, Descripcion.ToString, Compras.ToString, Cobranzas.ToString, Saldo.ToString)
+            DataGridView1.Rows.Add(FormatDateTime(Fecha), Descripcion, FormatCurrency(Compras), FormatCurrency(Cobranzas), FormatCurrency(Saldo))
             TextBox2.Text = ""
             TextBox3.Text = "0"
             TextBox4.Text = "0"
@@ -57,19 +61,30 @@ Public Class Form1
             Dim FilaActual = DataGridView1.CurrentRow.Index
             Dim Fecha As DateTime = DateTimePicker1.Value
             Dim Descripcion As String = TextBox2.Text
-            Dim Compras As Int64 = TextBox3.Text
-            Dim Cobranzas As Int64 = TextBox4.Text
-            DataGridView1.Rows(FilaActual).Cells("Fecha").Value = Fecha.ToString
-            DataGridView1.Rows(FilaActual).Cells("Descripcion").Value = Descripcion.ToString
-            DataGridView1.Rows(FilaActual).Cells("Compras").Value = Compras.ToString
-            DataGridView1.Rows(FilaActual).Cells("Cobranzas").Value = Cobranzas.ToString
-            Dim Saldo As Int64 = DataGridView1.Rows(FilaActual - 1).Cells("Saldo").Value - Compras + Cobranzas
-            DataGridView1.Rows(FilaActual).Cells("Saldo").Value = Saldo.ToString
-            Saldox = DataGridView1.Rows(DataGridView1.Rows.Count() - 2).Cells("Saldo").Value
-            MsgBox("Modificado exitosamente")
+            Dim Compras As Decimal = TextBox3.Text
+            Dim Cobranzas As Decimal = TextBox4.Text
+            DataGridView1.Rows(FilaActual).Cells("Fecha").Value = FormatDateTime(Fecha)
+            DataGridView1.Rows(FilaActual).Cells("Descripcion").Value = Descripcion
+            DataGridView1.Rows(FilaActual).Cells("Compras").Value = FormatCurrency(Compras)
+            DataGridView1.Rows(FilaActual).Cells("Cobranzas").Value = FormatCurrency(Cobranzas)
 
 
-            reccorer(FilaActual)
+            Try
+                Dim Saldo As Decimal = DataGridView1.Rows(FilaActual - 1).Cells("Saldo").Value - Compras + Cobranzas
+                DataGridView1.Rows(FilaActual).Cells("Saldo").Value = FormatCurrency(Saldo)
+                Saldox = DataGridView1.Rows(DataGridView1.Rows.Count() - 2).Cells("Saldo").Value
+                reccorer(FilaActual)
+                MsgBox("Modificado exitosamente")
+
+
+            Catch ex As Exception
+                Dim Saldo As Decimal = 0 - Compras + Cobranzas
+                DataGridView1.Rows(FilaActual).Cells("Saldo").Value = FormatCurrency(Saldo)
+                Saldox = DataGridView1.Rows(DataGridView1.Rows.Count() - 2).Cells("Saldo").Value
+                reccorer(FilaActual)
+                MsgBox("Modificado exitosamente")
+
+            End Try
 
             TextBox2.Text = ""
             TextBox3.Text = "0"
@@ -92,8 +107,13 @@ Public Class Form1
                 Dim filActual = DataGridView1.CurrentRow.Index
                 reccorereliminar(filActual, DataGridView1.Rows(filActual).Cells("Cobranzas").Value - DataGridView1.Rows(filActual).Cells("Compras").Value)
                 DataGridView1.Rows.Remove(DataGridView1.Rows(filActual))
-                Saldox = DataGridView1.Rows(DataGridView1.Rows.Count() - 2).Cells("Saldo").Value
                 MsgBox("ELIMINADO exitosamente")
+                Try
+                    Saldox = DataGridView1.Rows(DataGridView1.Rows.Count() - 2).Cells("Saldo").Value
+
+                Catch ex As Exception
+                    Saldox = 0
+                End Try
             Catch ex As Exception
                 MsgBox("No se puede eliminar la ultima fila")
             End Try
@@ -129,6 +149,10 @@ Public Class Form1
         DesactivarBotones()
     End Sub
 
+
+
+
+
     Private Sub Leerdata(pathfile As String)
         Dim fileName As String = pathfile
 
@@ -149,7 +173,7 @@ Public Class Form1
                 DataGridView1.Rows.Add(leer)
             End While
             DataGridView1.Rows.Remove(DataGridView1.Rows(DataGridView1.Rows.Count() - 2))
-            Saldox = Convert.ToInt64(DataGridView1.Rows(DataGridView1.Rows.Count() - 1 - 1).Cells(4).Value)
+            Saldox = DataGridView1.Rows(DataGridView1.Rows.Count() - 1 - 1).Cells(4).Value
             archivo_leer.Close()
         Catch ex As Exception
             MsgBox("No se pudo encontrar su archivo en la carpeta")
@@ -158,13 +182,21 @@ Public Class Form1
 
 
     End Sub
+
+
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+
+
+
 
         TextBox3.Text = "0"
         TextBox4.Text = "0"
         OpenFileOnStart()
 
     End Sub
+
+
 
     Private Sub ChoosePathFile()
         Dim objFolderDlg As System.Windows.Forms.FolderBrowserDialog
@@ -242,19 +274,33 @@ Public Class Form1
         End If
     End Sub
 
-    Private Sub DataGridView1_CellContentClick(sender As Object, e As DataGridViewCellEventArgs)
 
+    Private Sub TextBox3_KeyDown(sender As Object, e As KeyEventArgs) Handles TextBox4.KeyDown
+        If e.KeyValue.ToString() = "188" Then
+            Thread.CurrentThread.CurrentCulture = New CultureInfo("es-AR")
+
+
+        End If
+        If e.KeyValue.ToString() = "110" Then
+            Thread.CurrentThread.CurrentCulture = New CultureInfo("en-US")
+
+
+        End If
     End Sub
 
-    Private Sub ElegirCaminoToolStripMenuItem_Click(sender As Object, e As EventArgs)
-        ChoosePathFile()
-    End Sub
 
-    Private Sub DataGridView1_CellContentClick_1(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView1.CellContentClick
 
-    End Sub
 
-    Private Sub TextBox4_TextChanged(sender As Object, e As EventArgs) Handles TextBox4.TextChanged
+    Private Sub TextBox4_KeyDown(sender As Object, e As KeyEventArgs) Handles TextBox4.KeyDown
+        If e.KeyValue.ToString() = "188" Then
+            Thread.CurrentThread.CurrentCulture = New CultureInfo("es-AR")
 
+
+        End If
+        If e.KeyValue.ToString() = "110" Then
+            Thread.CurrentThread.CurrentCulture = New CultureInfo("en-US")
+
+
+        End If
     End Sub
 End Class

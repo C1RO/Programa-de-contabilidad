@@ -40,17 +40,17 @@ Partial Class Form1
         Me.TextBox3 = New System.Windows.Forms.TextBox()
         Me.TextBox4 = New System.Windows.Forms.TextBox()
         Me.DataGridView1 = New System.Windows.Forms.DataGridView()
+        Me.Fecha = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Descripcion = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Compras = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Cobranzas = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Saldo = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Agregar = New System.Windows.Forms.Button()
         Me.Editar = New System.Windows.Forms.Button()
         Me.Eliminar = New System.Windows.Forms.Button()
         Me.Guardar = New System.Windows.Forms.Button()
         Me.DateTimePicker1 = New System.Windows.Forms.DateTimePicker()
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
-        Me.Fecha = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Descripcion = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Compras = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Cobranzas = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Saldo = New System.Windows.Forms.DataGridViewTextBoxColumn()
         CType(Me.DataGridView1, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
@@ -188,6 +188,7 @@ Partial Class Form1
         Me.DataGridView1.Location = New System.Drawing.Point(0, 181)
         Me.DataGridView1.MultiSelect = False
         Me.DataGridView1.Name = "DataGridView1"
+        Me.DataGridView1.ReadOnly = True
         Me.DataGridView1.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None
         DataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Control
@@ -212,6 +213,44 @@ Partial Class Form1
         Me.DataGridView1.ShowRowErrors = False
         Me.DataGridView1.Size = New System.Drawing.Size(1020, 533)
         Me.DataGridView1.TabIndex = 15
+        '
+        'Fecha
+        '
+        DataGridViewCellStyle3.Font = New System.Drawing.Font("Microsoft YaHei UI", 18.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle3.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(74, Byte), Integer), CType(CType(173, Byte), Integer))
+        Me.Fecha.DefaultCellStyle = DataGridViewCellStyle3
+        Me.Fecha.HeaderText = "Fecha"
+        Me.Fecha.Name = "Fecha"
+        Me.Fecha.ReadOnly = True
+        Me.Fecha.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        '
+        'Descripcion
+        '
+        Me.Descripcion.HeaderText = "Descripcion"
+        Me.Descripcion.Name = "Descripcion"
+        Me.Descripcion.ReadOnly = True
+        Me.Descripcion.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        '
+        'Compras
+        '
+        Me.Compras.HeaderText = "Compras"
+        Me.Compras.Name = "Compras"
+        Me.Compras.ReadOnly = True
+        Me.Compras.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        '
+        'Cobranzas
+        '
+        Me.Cobranzas.HeaderText = "Cobranzas"
+        Me.Cobranzas.Name = "Cobranzas"
+        Me.Cobranzas.ReadOnly = True
+        Me.Cobranzas.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        '
+        'Saldo
+        '
+        Me.Saldo.HeaderText = "Saldo"
+        Me.Saldo.Name = "Saldo"
+        Me.Saldo.ReadOnly = True
+        Me.Saldo.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
         '
         'Agregar
         '
@@ -311,43 +350,11 @@ Partial Class Form1
         Me.PictureBox1.TabIndex = 21
         Me.PictureBox1.TabStop = False
         '
-        'Fecha
-        '
-        DataGridViewCellStyle3.Font = New System.Drawing.Font("Microsoft YaHei UI", 18.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle3.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(74, Byte), Integer), CType(CType(173, Byte), Integer))
-        Me.Fecha.DefaultCellStyle = DataGridViewCellStyle3
-        Me.Fecha.HeaderText = "Fecha"
-        Me.Fecha.Name = "Fecha"
-        Me.Fecha.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        '
-        'Descripcion
-        '
-        Me.Descripcion.HeaderText = "Descripcion"
-        Me.Descripcion.Name = "Descripcion"
-        Me.Descripcion.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        '
-        'Compras
-        '
-        Me.Compras.HeaderText = "Compras"
-        Me.Compras.Name = "Compras"
-        Me.Compras.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        '
-        'Cobranzas
-        '
-        Me.Cobranzas.HeaderText = "Cobranzas"
-        Me.Cobranzas.Name = "Cobranzas"
-        Me.Cobranzas.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        '
-        'Saldo
-        '
-        Me.Saldo.HeaderText = "Saldo"
-        Me.Saldo.Name = "Saldo"
-        Me.Saldo.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.BackColor = System.Drawing.Color.White
         Me.ClientSize = New System.Drawing.Size(1020, 726)
         Me.Controls.Add(Me.DateTimePicker1)
         Me.Controls.Add(Me.Guardar)
